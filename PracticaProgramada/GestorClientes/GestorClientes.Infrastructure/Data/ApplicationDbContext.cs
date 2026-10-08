@@ -1,3 +1,4 @@
+
 using Microsoft.EntityFrameworkCore;
 using GestorClientes.Domain;
 
@@ -18,7 +19,7 @@ public class ApplicationDbContext : DbContext
     {
         modelBuilder.Entity<Cliente>(entity =>
         {
-            entity.ToTable("Cliente");
+            entity.ToTable("Clientes");
 
             entity.Property(c => c.Cedula).IsRequired().HasMaxLength(20);
             entity.Property(c => c.Nombre).IsRequired().HasMaxLength(100);
@@ -26,7 +27,6 @@ public class ApplicationDbContext : DbContext
 
             entity.HasIndex(c => c.Cedula).IsUnique();
 
-            // Al borrar un cliente se borran también sus teléfonos
             entity.HasMany(c => c.Telefonos)
                 .WithOne(t => t.Cliente)
                 .HasForeignKey(t => t.ClienteId)
@@ -35,9 +35,10 @@ public class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<Telefono>(entity =>
         {
-            entity.ToTable("Telefono");
+            entity.ToTable("Telefonos");
 
             entity.Property(t => t.Numero).IsRequired().HasMaxLength(20);
         });
     }
 }
+

@@ -1,3 +1,5 @@
+
+using Microsoft.EntityFrameworkCore;
 using GestorClientes.Domain;
 using GestorClientes.Infrastructure.Data;
 
@@ -7,37 +9,77 @@ namespace GestorClientes.Infrastructure.Repository
     {
         private readonly ApplicationDbContext _context;
 
-        public ClienteRepository(ApplicationDbContext context) // Inyección de dependencias
+        public ClienteRepository(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // TODO (Persona 1): implementar los 5 métodos. Usar async, AsNoTracking en las consultas,
-        // Include(c => c.Telefonos) para traer los teléfonos y pasar el CancellationToken.
-
-        public Task<List<Cliente>> GetAllClientesAsync(CancellationToken cancellationToken = default)
+        public async Task<List<Cliente>> GetAllClientesAsync(
+            CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException("Pendiente: Persona 1");
+            return await _context.Clientes
+                .AsNoTracking()
+                .Include(c => c.Telefonos)
+                .ToListAsync(cancellationToken);
         }
 
-        public Task<Cliente?> GetClienteByIdAsync(int id, CancellationToken cancellationToken = default)
+        public async Task<Cliente?> GetClienteByIdAsync(
+            int id, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException("Pendiente: Persona 1");
+            return await _context.Clientes
+                .AsNoTracking()
+                .Include(c => c.Telefonos)
+                .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
         }
 
-        public Task<bool> CreateClienteAsync(Cliente cliente, CancellationToken cancellationToken = default)
+        public async Task<bool> CreateClienteAsync(
+            Cliente cliente, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException("Pendiente: Persona 1");
+            _context.Clientes.Add(cliente);
+
+            return await _context.SaveChangesAsync(cancellationToken) > 0;
         }
 
-        public Task<bool> UpdateClienteAsync(Cliente cliente, CancellationToken cancellationToken = default)
+        public async Task<bool> UpdateClienteAsync(
+            Cliente cliente, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException("Pendiente: Persona 1");
+            var existente = await _context.Clientes
+                .Include(c => c.Telefonos)
+                .FirstOrDefaultAsync(c => c.Id == cliente.Id, cancellationToken);
+
+            if (existente == null)
+                return false;
+
+            existente.Cedula = cliente.Cedula;
+            existente.Nombre = cliente.Nombre;
+            existente.Apellidos = cliente.Apellidos;
+
+            _context.Telefonos.RemoveRange(existente.Telefonos);
+
+            foreach (var telefono in cliente.Telefonos)
+            {
+                _context.Telefonos.Add(new Telefono
+                {
+                    Numero = telefono.Numero,
+                    ClienteId = existente.Id
+                });
+            }
+
+            return await _context.SaveChangesAsync(cancellationToken) > 0;
         }
 
-        public Task<bool> DeleteClienteAsync(int id, CancellationToken cancellationToken = default)
+        public async Task<bool> DeleteClienteAsync(
+            int id, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException("Pendiente: Persona 1");
+            var cliente = await _context.Clientes
+                .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
+
+            if (cliente == null)
+                return false;
+
+            _context.Clientes.Remove(cliente);
+
+            return await _context.SaveChangesAsync(cancellationToken) > 0;
         }
     }
 }
