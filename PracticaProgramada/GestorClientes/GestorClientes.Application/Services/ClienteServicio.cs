@@ -1,48 +1,97 @@
-using AutoMapper;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using GestorClientes.Application.Dtos;
 using GestorClientes.Infrastructure.Repository;
 
 namespace GestorClientes.Application.Services
 {
-    // Principio SOLID de inversión de dependencias: se depende de la interfaz IClienteRepository,
-    // no de la clase concreta.
     public class ClienteServicio : IClienteServicio
     {
         private readonly IClienteRepository _clienteRepository;
-        private readonly IMapper _mapper;
+        private readonly AutoMapper.IMapper _mapper;
 
-        public ClienteServicio(IClienteRepository clienteRepository, IMapper mapper)
+        public ClienteServicio(IClienteRepository clienteRepository, AutoMapper.IMapper mapper)
         {
             _clienteRepository = clienteRepository;
             _mapper = mapper;
         }
 
-        // TODO (Persona 2): implementar los 5 métodos. Validar las reglas de negocio antes de
-        // guardar y devolver un Respuesta<ClienteDto> con el resultado.
-
-        public Task<List<ClienteDto>> ObtenerClientesAsync(CancellationToken cancellationToken = default)
+        public async Task<List<ClienteDto>> ObtenerClientesAsync(CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException("Pendiente: Persona 2");
+            var clientes = await _clienteRepository.GetAllClientesAsync(cancellationToken);
+            return _mapper.Map<List<ClienteDto>>(clientes);
         }
 
-        public Task<ClienteDto?> ObtenerClientePorIdAsync(int id, CancellationToken cancellationToken = default)
+        public async Task<ClienteDto?> ObtenerClientePorIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException("Pendiente: Persona 2");
+            var cliente = await _clienteRepository.GetClienteByIdAsync(id, cancellationToken);
+            return _mapper.Map<ClienteDto>(cliente);
         }
 
-        public Task<Respuesta<ClienteDto>> CrearClienteAsync(ClienteDto cliente, CancellationToken cancellationToken = default)
+        public async Task<Respuesta<ClienteDto>> CrearClienteAsync(ClienteDto cliente, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException("Pendiente: Persona 2");
+            var respuesta = new Respuesta<ClienteDto>();
+            var clienteEntity = _mapper.Map<Domain.Cliente>(cliente);
+
+            if (!clienteEntity.ValidarReglasDeNegocio())
+            {
+                respuesta.EsCorrecto = false;
+                respuesta.Mensaje = "La cédula, el nombre y al menos un teléfono son obligatorios.";
+                respuesta.Codigo = 400;
+                return respuesta;
+            }
+
+            if (!await _clienteRepository.CreateClienteAsync(clienteEntity, cancellationToken))
+            {
+                respuesta.EsCorrecto = false;
+                respuesta.Mensaje = "No se pudo crear el cliente.";
+                respuesta.Codigo = 500;
+                return respuesta;
+            }
+
+            respuesta.Dato = _mapper.Map<ClienteDto>(clienteEntity);
+
+            return respuesta;
         }
 
-        public Task<Respuesta<ClienteDto>> ActualizarClienteAsync(ClienteDto cliente, CancellationToken cancellationToken = default)
+        public async Task<Respuesta<ClienteDto>> ActualizarClienteAsync(ClienteDto cliente, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException("Pendiente: Persona 2");
+            var respuesta = new Respuesta<ClienteDto>();
+            var clienteEntity = _mapper.Map<Domain.Cliente>(cliente);
+
+            if (!clienteEntity.ValidarReglasDeNegocio())
+            {
+                respuesta.EsCorrecto = false;
+                respuesta.Mensaje = "La cédula, el nombre y al menos un teléfono son obligatorios.";
+                respuesta.Codigo = 400;
+                return respuesta;
+            }
+
+            if (!await _clienteRepository.UpdateClienteAsync(clienteEntity, cancellationToken))
+            {
+                respuesta.EsCorrecto = false;
+                respuesta.Mensaje = "No se pudo actualizar el cliente.";
+                respuesta.Codigo = 500;
+                return respuesta;
+            }
+
+            respuesta.Dato = _mapper.Map<ClienteDto>(clienteEntity);
+            return respuesta;
         }
 
-        public Task<Respuesta<ClienteDto>> EliminarClienteAsync(int id, CancellationToken cancellationToken = default)
+        public async Task<Respuesta<ClienteDto>> EliminarClienteAsync(int id, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException("Pendiente: Persona 2");
+            var respuesta = new Respuesta<ClienteDto>();
+
+            if (!await _clienteRepository.DeleteClienteAsync(id, cancellationToken))
+            {
+                respuesta.EsCorrecto = false;
+                respuesta.Mensaje = "No se pudo eliminar el cliente.";
+                respuesta.Codigo = 500;
+            }
+
+            return respuesta;
         }
     }
 }

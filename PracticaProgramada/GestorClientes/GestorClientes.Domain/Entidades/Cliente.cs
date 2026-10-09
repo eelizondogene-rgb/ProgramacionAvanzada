@@ -17,4 +17,21 @@ public class Cliente
 
     // TODO (Persona 2): agregar aquí las reglas de negocio del cliente
     // (por ejemplo: cédula y nombre obligatorios, al menos un teléfono, etc.)
+
+    public bool ValidarReglaNegocioDatosObligatorios()
+    {
+        return Cedula != ""
+            && Nombre != "";
+    }
+
+    public bool ValidarReglaNegocioTieneTelefonos()
+    {
+        return Telefonos.Count > 0;
+    }
+
+    public bool ValidarReglasDeNegocio()
+    {
+        return ValidarReglaNegocioDatosObligatorios()
+            && ValidarReglaNegocioTieneTelefonos();
+    }
 }

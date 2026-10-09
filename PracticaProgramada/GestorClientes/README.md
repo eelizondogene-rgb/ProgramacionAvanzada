@@ -16,6 +16,8 @@
 ## 2. Enlace del repositorio
 _Pegar aquí el enlace de GitHub._
 
+
+
 ## 3. Especificación básica del proyecto
 
 ### a. Arquitectura
@@ -51,6 +53,16 @@ La relación entre clientes y teléfonos utiliza eliminación en cascada (`Delet
 _Persona 2: completar. Ideas: inversión de dependencias (interfaces `IClienteRepository` e `IClienteServicio`), responsabilidad única (métodos pequeños), segregación de interfaces. Patrones: Repository, Inyección de dependencias, DTO, Result (`Respuesta<T>`)._
 
 ---
+## Persona 2 - Lógica del negocio 
+### Principios SOLID 
+- Principio de dependencias: el servicio depende de la interfaz del IClienteRepository y no de Cliente repository.
+- Principio de responsabilidad: el repositorio se encarga de acceder a distintos datos y el servicio funciona con las reglas de negocio.
+### Patrones de diseño 
+- Repositorio: Posee IClienteRepository y ClienteRepository .
+- DTO: se utilizan ClienteDto y TelefonoDto para pasar los datos. 
+- Resultado: se utiliza Respuesta para ver el resultado de las operaciones.
+- AutoMapper: funciona por medio de las entidades y el DTO.
+
 
 ## Cómo ejecutar
 1. Abrir `GestorClientes.slnx` en Visual Studio y ejecutar el proyecto `GestorClientes`.
