@@ -1,3 +1,4 @@
+
 using Microsoft.EntityFrameworkCore;
 using GestorClientes.Application.Mapping;
 using GestorClientes.Application.Services;
@@ -6,10 +7,12 @@ using GestorClientes.Infrastructure.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configuración de controladores y vistas MVC
 builder.Services.AddControllersWithViews();
 
+// Conexión a SQL Server
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Inyección de dependencias
 builder.Services.AddScoped<IClienteRepository, ClienteRepository>();
@@ -20,13 +23,7 @@ builder.Services.AddAutoMapper(cfg => { }, typeof(MapeoClases));
 
 var app = builder.Build();
 
-// Crea la base de datos SQLite (clientes.db) si todavía no existe
-using (var scope = app.Services.CreateScope())
-{
-    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    context.Database.EnsureCreated();
-}
-
+// Configuración del manejo de errores
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -40,6 +37,7 @@ app.UseAuthorization();
 
 app.MapStaticAssets();
 
+// Configuración de rutas MVC
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
