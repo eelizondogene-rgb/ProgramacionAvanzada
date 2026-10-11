@@ -8,12 +8,12 @@
 
 Integrantes a quienes se les asignará la nota del proyecto.
 
-| Integrante             | Rol												   |
-|------------------------|-----------------------------------------------------|
-| Valeria Brenes Quesada | Persona 1: Base de datos (Infrastructure)		   |
-| Andrea                 | Persona 2: Lógica de negocio (Domain y Application) |
-| Gustavo Montoya Bolaños| Persona 3: Controlador y armado (Web)			   |
-| Gene                   | Persona 4: Pantallas (Views y wwwroot)              |
+| Integrante             | Rol												      |
+|------------------------|--------------------------------------------------------|
+| Valeria Brenes Quesada    | Persona 1: Base de datos (Infrastructure)		      |
+| Andreina Bolaños Valverde | Persona 2: Lógica de negocio (Domain y Application) |
+| Gustavo Montoya Bolaños   | Persona 3: Controlador y armado (Web)			      |
+| Genesis Gonzales Elizondo | Persona 4: Pantallas (Views y wwwroot)              |
 
 ## 2. Enlace del repositorio
 
