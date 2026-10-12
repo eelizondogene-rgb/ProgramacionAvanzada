@@ -68,3 +68,4 @@ La relación entre clientes y teléfonos utiliza eliminación en cascada para el
 - **DTO (Data Transfer Object):** se utilizan `ClienteDto` y `TelefonoDto` para transferir información entre los componentes del sistema.
 - **Result:** mediante `Respuesta<T>`, se devuelve información sobre el resultado de las operaciones, incluyendo el estado, mensaje y datos.
 - **AutoMapper:** permite realizar el mapeo entre las entidades del dominio y los DTOs.
+

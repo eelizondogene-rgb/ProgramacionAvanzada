@@ -42,6 +42,16 @@ namespace GestorClientes.Application.Services
                 return respuesta;
             }
 
+            clienteEntity.Cedula = clienteEntity.Cedula.Trim();
+
+            if (await _clienteRepository.ExisteCedulaAsync(clienteEntity.Cedula, cancellationToken: cancellationToken))
+            {
+                respuesta.EsCorrecto = false;
+                respuesta.Mensaje = "Ya existe un cliente registrado con esa cédula.";
+                respuesta.Codigo = 409;
+                return respuesta;
+            }
+
             if (!await _clienteRepository.CreateClienteAsync(clienteEntity, cancellationToken))
             {
                 respuesta.EsCorrecto = false;
@@ -65,6 +75,16 @@ namespace GestorClientes.Application.Services
                 respuesta.EsCorrecto = false;
                 respuesta.Mensaje = "La cédula, el nombre y al menos un teléfono son obligatorios.";
                 respuesta.Codigo = 400;
+                return respuesta;
+            }
+
+            clienteEntity.Cedula = clienteEntity.Cedula.Trim();
+
+            if (await _clienteRepository.ExisteCedulaAsync(clienteEntity.Cedula, clienteEntity.Id, cancellationToken))
+            {
+                respuesta.EsCorrecto = false;
+                respuesta.Mensaje = "Esa cédula ya está registrada por otro cliente.";
+                respuesta.Codigo = 409;
                 return respuesta;
             }
 

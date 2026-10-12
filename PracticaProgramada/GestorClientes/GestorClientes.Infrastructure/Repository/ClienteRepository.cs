@@ -32,6 +32,16 @@ namespace GestorClientes.Infrastructure.Repository
                 .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
         }
 
+        public async Task<bool> ExisteCedulaAsync(
+            string cedula, int? excluirClienteId = null, CancellationToken cancellationToken = default)
+        {
+            var cedulaNormalizada = cedula.Trim();
+            return await _context.Clientes.AnyAsync(
+                c => c.Cedula == cedulaNormalizada &&
+                     (!excluirClienteId.HasValue || c.Id != excluirClienteId.Value),
+                cancellationToken);
+        }
+
         public async Task<bool> CreateClienteAsync(
             Cliente cliente, CancellationToken cancellationToken = default)
         {

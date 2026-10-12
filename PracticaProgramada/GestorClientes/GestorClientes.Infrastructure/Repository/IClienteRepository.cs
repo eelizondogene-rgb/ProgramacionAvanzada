@@ -10,6 +10,9 @@ namespace GestorClientes.Infrastructure.Repository
         /// <summary>Devuelve un cliente con sus teléfonos, o null si no existe.</summary>
         Task<Cliente?> GetClienteByIdAsync(int id, CancellationToken cancellationToken = default);
 
+        /// <summary>Comprueba si una cédula ya está registrada. Puede excluirse un cliente al editar.</summary>
+        Task<bool> ExisteCedulaAsync(string cedula, int? excluirClienteId = null, CancellationToken cancellationToken = default);
+
         /// <summary>Guarda un cliente nuevo junto con sus teléfonos. True si se guardó.</summary>
         Task<bool> CreateClienteAsync(Cliente cliente, CancellationToken cancellationToken = default);
 

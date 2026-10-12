@@ -2,10 +2,151 @@
     ViewData["Title"] = "Clientes";
 }
 
-<h1>Clientes</h1>
+<section class="clientes-page">
+<div class="page-heading d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+    <div>
+        <div class="page-icon"><i class="bi bi-people-fill"></i></div>
+        <div>
+            <h1 class="h3 mb-1">Gestión de clientes</h1>
+            <p class="text-muted mb-0">Consulta, registra y administra clientes y sus teléfonos.</p>
+        </div>
+    </div>
+    <button type="button" class="btn btn-primary btn-nuevo-cliente" id="btnNuevoCliente">
+        <i class="bi bi-plus-lg"></i> Nuevo cliente
+    </button>
+</div>
 
-@* TODO (Persona 4): aquí va la tabla (DataTable), los botones de acciones y los modales. *@
-<p class="text-muted">Pantalla en construcción.</p>
+<div class="card clientes-card shadow-sm border-0">
+    <div class="card-header bg-white border-0 pt-4 px-4">
+        <h2 class="h6 mb-1">Listado de clientes</h2>
+        <p class="small text-muted mb-0">Utilice la búsqueda para encontrar un registro rápidamente.</p>
+    </div>
+    <div class="card-body px-4 pb-4">
+        <div class="table-responsive">
+        <table id="tablaClientes" class="table table-hover align-middle w-100">
+            <thead>
+                <tr>
+                    <th>Cédula</th>
+                    <th>Nombre</th>
+                    <th>Apellidos</th>
+                    <th>Teléfonos</th>
+                    <th class="text-center columna-acciones">Acciones</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+@* ===== Modal: detalle del cliente ===== *@
+<div class="modal fade" id="modalDetalle" tabindex="-1" aria-labelledby="tituloDetalle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="tituloDetalle">Detalle del cliente</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Cédula</dt>
+                    <dd class="col-sm-8" id="detalleCedula"></dd>
+                    <dt class="col-sm-4">Nombre</dt>
+                    <dd class="col-sm-8" id="detalleNombre"></dd>
+                    <dt class="col-sm-4">Apellidos</dt>
+                    <dd class="col-sm-8" id="detalleApellidos"></dd>
+                    <dt class="col-sm-4">Teléfonos</dt>
+                    <dd class="col-sm-8 mb-0" id="detalleTelefonos"></dd>
+                </dl>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* ===== Modal: formulario crear / editar ===== *@
+<div class="modal fade" id="modalFormulario" tabindex="-1" aria-labelledby="tituloFormulario" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form id="formCliente" novalidate>
+                <div class="modal-header">
+                    <h5 class="modal-title" id="tituloFormulario">Nuevo cliente</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="alertaFormulario" class="alert alert-danger d-none" role="alert"></div>
+
+                    <input type="hidden" id="clienteId" value="0" />
+
+                    <div class="mb-3">
+                        <label for="cedula" class="form-label">Cédula <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="cedula" maxlength="20" autocomplete="off" />
+                        <div class="invalid-feedback">La cédula es obligatoria.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="nombre" class="form-label">Nombre <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="nombre" maxlength="100" autocomplete="off" />
+                        <div class="invalid-feedback">El nombre es obligatorio.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="apellidos" class="form-label">Apellidos</label>
+                        <input type="text" class="form-control" id="apellidos" maxlength="100" autocomplete="off" />
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <label class="form-label mb-0">Teléfonos <span class="text-danger">*</span></label>
+                        <button type="button" class="btn btn-outline-primary btn-sm" id="btnAgregarTelefono">
+                            <i class="bi bi-plus-lg"></i> Agregar
+                        </button>
+                    </div>
+                    <div id="listaTelefonos"></div>
+                    <div class="form-text">Cada teléfono debe tener 8 dígitos.</div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="btnGuardar">
+                        <i class="bi bi-save"></i> Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@* ===== Modal: confirmar borrado ===== *@
+<div class="modal fade" id="modalBorrar" tabindex="-1" aria-labelledby="tituloBorrar" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="tituloBorrar">Confirmar borrado</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-1">¿Está seguro de que desea borrar a <strong id="nombreBorrar"></strong>?</p>
+                <p class="text-muted mb-0">También se borrarán sus teléfonos. Esta acción no se puede deshacer.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="btnConfirmarBorrar">
+                    <i class="bi bi-trash"></i> Sí, borrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* ===== Mensajes de éxito / error ===== *@
+<div class="toast-container position-fixed top-0 end-0 p-3">
+    <div id="toastMensaje" class="toast align-items-center border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body" id="toastTexto"></div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
+        </div>
+    </div>
+</div>
+
+</section>
 
 @section Scripts {
     <script src="~/js/cliente.js" asp-append-version="true"></script>
